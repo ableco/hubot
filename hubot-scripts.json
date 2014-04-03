@@ -1,1 +1,16 @@
-["redis-brain.coffee", "shipit.coffee", "stock.coffee"]
+[
+"redis-brain.coffee",
+"shipit.coffee",
+"stock.coffee",
+"bluebottle.coffee",
+"decide.coffee",
+"directions.coffee",
+"lyrics.coffee",
+"mta.coffee",
+"rdio.coffee",
+"sonos.coffee",
+"soundcloud-info.coffee",
+"spotify.coffee",
+"weather.coffee",
+"wikipedia.coffee"
+]
