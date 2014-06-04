@@ -28,4 +28,6 @@ shanes = [
 
 module.exports = (robot) ->
   robot.hear /.*(shane me).*/i, (msg) ->
+    current_user = msg.message.user.name.toLowerCase()
+    return if current_user.indexOf('mike') != -1
     msg.send msg.random shanes
