@@ -21,5 +21,5 @@ lunchOptions = [
 ]
 
 module.exports = (robot) ->
-  robot.hear /.*(what are we hating for lunch today).*/i, (msg) ->
+  robot.hear /.*(what are we hating for lunch today|what's for lunch|whats for lunch|hate lunch|hating lunch).*/i, (msg) ->
     msg.send msg.random lunchOptions
