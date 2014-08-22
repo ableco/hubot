@@ -20,6 +20,8 @@ lunchOptions = [
   "http://midtownlunch.com/downtown-nyc/files/2013/07/P1040480-500x375.jpg"
 ]
 
+# TODO: Check weather and suggest Seamless if it's not looking good.
+
 module.exports = (robot) ->
   robot.hear /.*(what are we hating for lunch today|what's for lunch|whats for lunch|hate lunch|hating lunch).*/i, (msg) ->
     msg.send msg.random lunchOptions
