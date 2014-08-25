@@ -23,5 +23,5 @@ lunchOptions = [
 # TODO: Check weather and suggest Seamless if it's not looking good.
 
 module.exports = (robot) ->
-  robot.hear /.*(what are we hating for lunch today|what's for lunch|whats for lunch|hate lunch|hating lunch).*/i, (msg) ->
+  robot.hear /.*(hating for lunch|what's for lunch|whats for lunch|hate lunch|hating lunch).*/i, (msg) ->
     msg.send msg.random lunchOptions
