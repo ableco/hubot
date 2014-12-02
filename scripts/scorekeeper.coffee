@@ -18,3 +18,8 @@ module.exports = (robot) ->
     msg.http("http://disrupto-scorekeeper.herokuapp.com/update")
       .post({"user" : last_sender, "score" : score, "scorer" : score_setter}) (err, res, body) ->
         # whatever
+
+  robot.respond /score us/i, (msg) ->
+    msg.http("http://disrupto-scorekeeper.herokuapp.com/")
+      .get() (err, res, body) ->
+        msg.send res
