@@ -16,4 +16,4 @@ module.exports = (robot) ->
     # msg.reply "dsfsfsdfs"
     # msg.reply msg
     msg.http("http://disrupto-scorekeeper.herokuapp.com/update")
-      .patch({"user" : last_sender, "score" : score, "scorer" : score_setter})
+      .post({"user" : last_sender, "score" : score, "scorer" : score_setter})
