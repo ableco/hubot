@@ -16,6 +16,10 @@ module.exports = (robot) ->
     room = msg.message.room
     score_setter = msg.message.user.name
     last_sender = robot.brain.get("#{room}-last-sender")
+    console.log score
+    console.log room
+    console.log score_setter
+    console.log last_sender
     #msg.reply msg.match[1]
     # score = msg.match[0]
     # msg.reply "dsfsfsdfs"
