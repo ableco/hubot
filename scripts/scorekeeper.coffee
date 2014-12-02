@@ -18,7 +18,7 @@ module.exports = (robot) ->
     last_sender = robot.brain.get("#{room}-last-sender")
     console.log score
     console.log room
-    console.log score_setter
+    console.log JSON.stringify(msg.message)
     console.log last_sender
     #msg.reply msg.match[1]
     # score = msg.match[0]
