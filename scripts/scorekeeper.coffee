@@ -2,7 +2,7 @@
 
 module.exports = (robot) ->
 
-  robot.hear /([\+|\-]\d+)/, (msg) ->
+  robot.hear /([\+|\-]\d+)/i, (msg) ->
     msg.send "WHAT"
     # score = msg.match[0]
     # msg.reply "dsfsfsdfs"
