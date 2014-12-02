@@ -1,6 +1,6 @@
 module.exports = (robot) ->
 
-  robot.respond /^([\+|\-]\d+)/, (msg) ->
+  robot.hear /^([\+|\-]\d+)/, (msg) ->
     score = msg.match[0]
     msg.reply "dsfsfsdfs"
     msg.reply msg
