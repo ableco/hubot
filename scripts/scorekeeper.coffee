@@ -24,8 +24,12 @@ module.exports = (robot) ->
     # score = msg.match[0]
     # msg.reply "dsfsfsdfs"
     # msg.reply msg
+    data = JSON.stringify({
+      user: last_sender,
+      score: score,
+      scorer: score_setter
+    })
     msg.http("http://disrupto-scorekeeper.herokuapp.com/update")
-      .post({"user" : last_sender, "score" : score, "scorer" : score_setter}) (err, res, body) ->
-        # whatever
-        x = "g"
+      .post(data) (err, res, body) ->
+        console.log res
 
