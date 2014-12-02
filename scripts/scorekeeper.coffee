@@ -2,7 +2,10 @@
 
 module.exports = (robot) ->
   robot.catchAll (msg) ->
-    #
+    room = msg.message.room
+    sender = msg.message.user.name
+    robot.brain.set("#{room}-last-sender", sender)
+    msg.reply robot.brain.get("#{room}-last-sender")
 
   robot.hear /([\+|\-]\d+)/i, (msg) ->
     score = msg.match[1]
