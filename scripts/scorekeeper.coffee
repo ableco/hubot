@@ -3,6 +3,7 @@
 module.exports = (robot) ->
   robot.catchAll (msg) ->
     room = msg.message.room
+    console.log JSON.stringify(msg.message)
     sender = msg.message.user.name
     robot.brain.set("#{room}-last-sender", sender)
 
