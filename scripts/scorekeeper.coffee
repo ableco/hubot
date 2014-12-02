@@ -3,7 +3,8 @@
 module.exports = (robot) ->
 
   robot.hear /^([\+|\-]\d+)/i, (msg) ->
-    msg.reply msg.match[1]
+    msg.reply "ok"
+    # msg.reply msg.match[1]
     # score = msg.match[0]
     # msg.reply "dsfsfsdfs"
     # msg.reply msg
