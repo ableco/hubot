@@ -7,7 +7,7 @@ module.exports = (robot) ->
     sender = msg.message.user.id
     robot.brain.set("#{room}-last-sender", sender)
     data = JSON.stringify({
-      user: last_sender,
+      user: sender,
       room: room
     })
     msg.http("http://disrupto-scorekeeper.herokuapp.com/comment")
