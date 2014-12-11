@@ -6,6 +6,14 @@ module.exports = (robot) ->
     console.log JSON.stringify(msg.message)
     sender = msg.message.user.id
     robot.brain.set("#{room}-last-sender", sender)
+    data = JSON.stringify({
+      user: last_sender,
+      room: room
+    })
+    msg.http("http://disrupto-scorekeeper.herokuapp.com/comment")
+      .post(data) (err, res, body) ->
+        console.log body
+
 
   robot.hear /([\+|\-]\d+)/i, (msg) ->
     score = msg.match[1]
@@ -17,7 +25,7 @@ module.exports = (robot) ->
       score: score,
       scorer: score_setter
     })
-    msg.http("http://disrupto-scorekeeper.herokuapp.com/update")
+    msg.http("http://disrupto-scorekeeper.herokuapp.com/plus_and_minus")
       .post(data) (err, res, body) ->
         console.log body
 
