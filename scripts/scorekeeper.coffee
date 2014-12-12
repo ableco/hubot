@@ -3,7 +3,6 @@
 module.exports = (robot) ->
   robot.catchAll (msg) ->
     room = msg.message.room
-    console.log JSON.stringify(msg.message)
     sender = msg.message.user.id
     robot.brain.set("#{room}-last-sender", sender)
     data = JSON.stringify({
@@ -17,7 +16,6 @@ module.exports = (robot) ->
 
   robot.hear /(^|\s)([\+|\-]\d+)/i, (msg) ->
     score = msg.match[2]
-    console.log score
     room = msg.message.room
     score_setter = msg.message.user.id
     last_sender = robot.brain.get("#{room}-last-sender")
