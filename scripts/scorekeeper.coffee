@@ -15,7 +15,7 @@ module.exports = (robot) ->
         console.log body
 
 
-  robot.hear /([^|\s][\+|\-]\d+)/i, (msg) ->
+  robot.hear /[^|\s]([\+|\-]\d+)/i, (msg) ->
     score = msg.match[1]
     room = msg.message.room
     score_setter = msg.message.user.id
