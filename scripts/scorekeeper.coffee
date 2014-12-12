@@ -15,8 +15,9 @@ module.exports = (robot) ->
         console.log body
 
 
-  robot.hear /[^|\s]([\+|\-]\d+)/i, (msg) ->
-    score = msg.match[1]
+  robot.hear /(^|\s)([\+|\-]\d+)/i, (msg) ->
+    score = msg.match[2]
+    console.log score
     room = msg.message.room
     score_setter = msg.message.user.id
     last_sender = robot.brain.get("#{room}-last-sender")
