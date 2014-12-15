@@ -4,14 +4,18 @@ module.exports = (robot) ->
   robot.catchAll (msg) ->
     room = msg.message.room
     sender = msg.message.user.id
-    robot.brain.set("#{room}-last-sender", sender)
-    data = JSON.stringify({
-      user: sender,
-      room: room
-    })
-    msg.http("http://disrupto-scorekeeper.herokuapp.com/comment")
-      .post(data) (err, res, body) ->
-        console.log body
+    last_sender = robot.brain.get("#{room}-last-sender")
+    unless sender == last_sender
+      data = JSON.stringify({
+        user: sender,
+        room: room
+      })
+      msg.http("http://disrupto-scorekeeper.herokuapp.com/comment")
+        .post(data) (err, res, body) ->
+          console.log body
+      robot.brain.set("#{room}-last-sender", sender)
+    
+    
 
 
   robot.hear /(^|\s)([\+|\-]\d+)/i, (msg) ->
