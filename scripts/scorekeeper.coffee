@@ -10,8 +10,8 @@ module.exports = (robot) ->
     console.log question
     if msg.message.text.toLowerCase().indexOf(question.answer.toLowerCase()) >= 0
       console.log "ok"
-      robot.brain.del("current-trivia-question")
-      msg.send "Nice job, #{sender}! '#{question.answer}' is correct"
+      robot.brain.remove("current-trivia-question")
+      msg.send "Nice job, #{sender}! '#{question.answer.toUpperCase()}' is correct"
     else
       console.log "okk"
       last_sender = robot.brain.get("#{room}-last-sender")
