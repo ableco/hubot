@@ -55,10 +55,12 @@ module.exports = (robot) ->
   robot.respond /quiz me/i, (msg) ->
     msg.http("http://jservice.io/api/random")
       .get() (err, res, body) ->
-        robot.brain.set("current-trivia-question", JSON.parse(body)[0])
+        x = JSON.parse(body)[0]
+        console.log x
+        robot.brain.set("current-trivia-question", x)
     
-    question = robot.brain.set("current-trivia-question")
+    y = robot.brain.set("current-trivia-question")
 
-    console.log question
+    console.log y
 
-    msg.send question.question
+    msg.send y.question
