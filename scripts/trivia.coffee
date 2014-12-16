@@ -53,15 +53,12 @@ module.exports = (robot) ->
   # [{"id":33724,"answer":"coffer","question":"Type of chest seen here in the Getty collection; those of the Getty trust are quite full","value":500,"airdate":"1998-10-12T12:00:00.000Z","created_at":"2014-02-11T23:05:48.949Z","updated_at":"2014-02-11T23:05:48.949Z","category_id":3942,"category":{"id":3942,"title":"the getty","created_at":"2014-02-11T23:05:48.062Z","updated_at":"2014-02-11T23:05:48.062Z","clue_id":null,"clues_count":5}}]
   
   robot.respond /quiz me/i, (msg) ->
-    @question = ""
-    @answer = ""
-    @category = ""
-    @value = ""
-
-    @question = msg.http("http://jservice.io/api/random")
+    msg.http("http://jservice.io/api/random")
       .get() (err, res, body) ->
-        return JSON.parse(body)[0]
+        robot.brain.set("current-trivia-question", JSON.parse(body)[0])
     
-    console.log @question
+    question = robot.brain.set("current-trivia-question")
 
-    msg.send @question.question
+    console.log question
+
+    msg.send question.question
