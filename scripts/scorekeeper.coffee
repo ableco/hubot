@@ -51,9 +51,5 @@ module.exports = (robot) ->
       .get() (err, res, body) ->
         question = JSON.parse(body)[0]
         robot.brain.set("current-trivia-question", question)
-    
-    q = robot.brain.get("current-trivia-question")
-
-    console.log q.answer
-
-    msg.send "[#{q.category.title.toUpperCase()}] For #{q.value/100} point#{if (q.value > 100) then 's' else ''}: #{q.question}..."
+        console.log question.answer
+        msg.send "[#{question.category.title.toUpperCase()}] For #{question.value/100} point#{if (question.value > 100) then 's' else ''}: #{question.question}..."
