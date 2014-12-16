@@ -7,13 +7,18 @@ module.exports = (robot) ->
 
     # check if message was the answer to the current question
     question = robot.brain.get("current-trivia-question-#{room}")
-    console.log question
     if question and msg.message.text.toLowerCase().indexOf(question.answer.replace(/[^a-zA-Z0-9\-\s\']/g, '').toLowerCase()) >= 0
-      console.log "ok"
       robot.brain.remove("current-trivia-question-#{room}")
       msg.send "Nice job, #{sender}! '#{question.answer.toUpperCase()}' is correct"
+      if room == "water-cooler"
+        data = JSON.stringify({
+          user: sender,
+          points: question.value/100
+        })
+        msg.http("http://disrupto-scorekeeper.herokuapp.com/trivia_answer")
+          .post(data) (err, res, body) ->
+            console.log body
     else
-      console.log "okk"
       last_sender = robot.brain.get("#{room}-last-sender")
       unless sender == last_sender
         data = JSON.stringify({
