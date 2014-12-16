@@ -59,7 +59,7 @@ module.exports = (robot) ->
         console.log x
         robot.brain.set("current-trivia-question", x)
     
-    y = robot.brain.set("current-trivia-question")
+    y = robot.brain.get("current-trivia-question")
 
     console.log y
 
