@@ -30,7 +30,13 @@ module.exports = (robot) ->
   #     .post(data) (err, res, body) ->
   #       console.log body
 
+  # a trivia game using the jservice api (http://jservice.io/)
+
   robot.respond /quiz me/i, (msg) ->
-    msg.http("http://jservice.io/api/random")
-      .get() (err, res, body) ->
-        msg.send JSON.parse(body)[0].question
+    10.times do
+      msg.http("http://jservice.io/api/random")
+        .get() (err, res, body) ->
+          question = JSON.parse(body)[0].question
+          if /seen here/.test(question)
+            msg.send JSON.parse(body)[0].question
+            break
