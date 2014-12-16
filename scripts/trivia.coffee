@@ -36,7 +36,16 @@ module.exports = (robot) ->
   
   robot.respond /quiz me/i, (msg) ->
     @question = ""
+    @answer = ""
+    @category = ""
+    @value = ""
+
     msg.http("http://jservice.io/api/random")
       .get() (err, res, body) ->
-        @question = JSON.parse(body)[0]
+        console.log JSON.parse(body)[0].question
+        @question = JSON.parse(body)[0].question
+        @answer = JSON.parse(body)[0].answer
+        @category = JSON.parse(body)[0].category.title
+        @value = JSON.parse(body)[0].value
+    
     msg.send @question.question
