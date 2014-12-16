@@ -60,10 +60,10 @@ module.exports = (robot) ->
 
     msg.http("http://jservice.io/api/random")
       .get() (err, res, body) ->
-        console.log JSON.parse(body)[0].question
         @question = JSON.parse(body)[0].question
-        @answer = JSON.parse(body)[0].answer
-        @category = JSON.parse(body)[0].category.title
-        @value = JSON.parse(body)[0].value
+        console.log @question
+        # @answer = JSON.parse(body)[0].answer
+        # @category = JSON.parse(body)[0].category.title
+        # @value = JSON.parse(body)[0].value
     
     msg.send @question
