@@ -6,11 +6,11 @@ module.exports = (robot) ->
     sender = msg.message.user.id
 
     # check if message was the answer to the current question
-    question = robot.brain.get("current-trivia-question")
+    question = robot.brain.get("current-trivia-question-#{room}")
     console.log question
-    if msg.message.text.toLowerCase().indexOf(question.answer.toLowerCase()) >= 0
+    if question and msg.message.text.toLowerCase().indexOf(question.answer.replace(/[^a-zA-Z0-9\-\s\']/g, '').toLowerCase()) >= 0
       console.log "ok"
-      robot.brain.remove("current-trivia-question")
+      robot.brain.remove("current-trivia-question-#{room}")
       msg.send "Nice job, #{sender}! '#{question.answer.toUpperCase()}' is correct"
     else
       console.log "okk"
@@ -50,6 +50,6 @@ module.exports = (robot) ->
     msg.http("http://jservice.io/api/random")
       .get() (err, res, body) ->
         question = JSON.parse(body)[0]
-        robot.brain.set("current-trivia-question", question)
+        robot.brain.set("current-trivia-question-#{msg.message.room}", question)
         console.log question.answer
         msg.send "[#{question.category.title.toUpperCase()}] For #{question.value/100} point#{if (question.value > 100) then 's' else ''}: #{question.question}..."
