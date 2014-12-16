@@ -5,20 +5,23 @@ module.exports = (robot) ->
     room = msg.message.room
     sender = msg.message.user.id
 
-    console.log msg.message
-
-
-    last_sender = robot.brain.get("#{room}-last-sender")
-    unless sender == last_sender
-      data = JSON.stringify({
-        user: sender,
-        room: room
-      })
-      msg.http("http://disrupto-scorekeeper.herokuapp.com/comment")
-        .post(data) (err, res, body) ->
-          console.log body
-      robot.brain.set("#{room}-last-sender", sender)
-    
+    # check if message was the answer to the current question
+    question = robot.brain.get("current-trivia-question")
+    if question and msg.message.text.toLowerCase().indexOf(question.answer.toLowerCase()) >= 0
+      robot.brain.del("current-trivia-question")
+      msg.send "Nice job, #{sender}! '#{question.answer}' is correct"
+    else
+      last_sender = robot.brain.get("#{room}-last-sender")
+      unless sender == last_sender
+        data = JSON.stringify({
+          user: sender,
+          room: room
+        })
+        msg.http("http://disrupto-scorekeeper.herokuapp.com/comment")
+          .post(data) (err, res, body) ->
+            console.log body
+        robot.brain.set("#{room}-last-sender", sender)
+      
     
 
 
