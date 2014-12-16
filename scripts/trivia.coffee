@@ -36,9 +36,7 @@ module.exports = (robot) ->
   
   robot.respond /quiz me/i, (msg) ->
     @question = ""
-    while true
-      msg.http("http://jservice.io/api/random")
-        .get() (err, res, body) ->
-          @question = JSON.parse(body)[0].question
-      break unless /seen here/.test(@question)
-    msg.send @question
+    msg.http("http://jservice.io/api/random")
+      .get() (err, res, body) ->
+        @question = JSON.parse(body)[0]
+    msg.send @question.question
