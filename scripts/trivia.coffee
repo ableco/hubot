@@ -44,4 +44,4 @@ module.exports = (robot) ->
 
     console.log q.answer
 
-    msg.send "[#{q.category.title.toUpperCase()}] For #{q.value/100} points: #{q.question}..."
+    msg.send "[#{q.category.title.toUpperCase()}] For #{q.value/100} point#{'s' if q.value > 100}: #{q.question}..."
