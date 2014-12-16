@@ -14,7 +14,7 @@
 #         @value = JSON.parse(body)[0].value
 
 #   askQuestion: (msg)
-#     msg.send 
+#     msg.send @question
 
 module.exports = (robot) ->
   # robot.catchAll (msg) ->
@@ -58,12 +58,10 @@ module.exports = (robot) ->
     @category = ""
     @value = ""
 
-    msg.http("http://jservice.io/api/random")
+    @question = msg.http("http://jservice.io/api/random")
       .get() (err, res, body) ->
-        @question = JSON.parse(body)[0].question
-        console.log @question
-        # @answer = JSON.parse(body)[0].answer
-        # @category = JSON.parse(body)[0].category.title
-        # @value = JSON.parse(body)[0].value
+        return JSON.parse(body)[0]
     
-    msg.send @question
+    console.log @question
+
+    msg.send @question.question
