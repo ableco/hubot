@@ -1,21 +1,3 @@
-# class Game
-#   constructor: (msg, robot) ->
-#     @question = ""
-#     @answer = ""
-#     @category = ""
-#     @value = ""
-
-#     msg.http("http://jservice.io/api/random")
-#       .get() (err, res, body) ->
-#         console.log JSON.parse(body)[0].question
-#         @question = JSON.parse(body)[0].question
-#         @answer = JSON.parse(body)[0].answer
-#         @category = JSON.parse(body)[0].category.title
-#         @value = JSON.parse(body)[0].value
-
-#   askQuestion: (msg)
-#     msg.send @question
-
 module.exports = (robot) ->
   # robot.catchAll (msg) ->
   #   room = msg.message.room
@@ -55,12 +37,11 @@ module.exports = (robot) ->
   robot.respond /quiz me/i, (msg) ->
     msg.http("http://jservice.io/api/random")
       .get() (err, res, body) ->
-        x = JSON.parse(body)[0]
-        console.log x
-        robot.brain.set("current-trivia-question", x)
+        question = JSON.parse(body)[0]
+        robot.brain.set("current-trivia-question", question)
     
-    y = robot.brain.get("current-trivia-question")
+    q = robot.brain.get("current-trivia-question")
 
-    console.log y
+    console.log q.answer
 
-    msg.send y.question
+    msg.send "[#{q.category.title}] For #{q.value/100} points: #{y.question}"
