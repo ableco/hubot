@@ -32,5 +32,5 @@ module.exports = (robot) ->
 
   robot.respond /quiz me/i, (msg) ->
     msg.http("http://jservice.io/api/random")
-      .get() (err, res, body)
+      .get() (err, res, body) ->
         msg.send JSON.parse(body)[0].question
