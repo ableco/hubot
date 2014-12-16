@@ -44,4 +44,4 @@ module.exports = (robot) ->
 
     console.log q.answer
 
-    msg.send "[#{q.category.title}] For #{q.value/100} points: #{y.question}"
+    msg.send "[#{q.category.title}] For #{q.value/100} points: #{q.question}"
