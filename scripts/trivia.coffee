@@ -39,5 +39,5 @@ module.exports = (robot) ->
       msg.http("http://jservice.io/api/random")
         .get() (err, res, body) ->
           question = JSON.parse(body)[0].question
-          break if /seen here/.test(question)
+      break if /seen here/.test(question)
     msg.send question
