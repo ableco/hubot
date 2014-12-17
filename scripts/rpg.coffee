@@ -40,7 +40,8 @@ module.exports = (robot) ->
     
     race_article = if (race in ["Elf", "Orc", "Ogre"]) then "an" else "a"
 
-    die = new Die(15)
+    fifteen_sided_die = new Die(15)
+    six_sided_die = new Die(6)
 
     strength = die.roll()
     vitality = die.roll()
@@ -53,12 +54,18 @@ module.exports = (robot) ->
     charisma = die.roll()
     luck = die.roll()
 
-    hp = switch
-      when character_class == "Wizard" then 20
-      when character_class == "Hunter" then 30
-      when character_class == "Warrior" then 40
-
-    hp = hp + vitality
+    if character_class == "Wizard"
+      hp = 20 + vitality
+      intelligence = 7 if intelligence < 7
+      intelligence += six_sided_die.roll()
+    else if character_class == "Hunter"
+      hp = 30 + vitality
+      dexterity = 7 if dexterity < 7
+      dexterity += six_sided_die.roll()
+    else if character_class == "Warrior"
+      hp = 40 + vitality
+      strength = 7 if strength < 7
+      strength += six_sided_die.roll()
 
     character_json = {
       level: 1,
