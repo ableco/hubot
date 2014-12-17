@@ -23,9 +23,9 @@ class Character
       
   attack_score: ->
     base_attack = switch @character.character_class
-      if "Wizard" then @character.intelligence
-      if "Hunter" then @character.dexterity
-      if "Warrior" then @character.strength
+      when "Wizard" then @character.intelligence
+      when "Hunter" then @character.dexterity
+      when "Warrior" then @character.strength
 
     die = new Die
     base_attack + die.roll(20)
