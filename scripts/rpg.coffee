@@ -7,7 +7,7 @@ class Die
     @sides = sides
 
   roll: ->
-    (Math.floor(Math.random() * sides) + 1)
+    (Math.floor(Math.random() * @sides) + 1)
 
 module.exports = (robot) ->
   # provides the user with information about their character
