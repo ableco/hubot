@@ -4,10 +4,10 @@ class Character
     @attribute_string = "[Level: #{@character.level}, EXP: #{@character.experience}, HP: #{@character.hitpoints_remaining}/#{@character.hitpoints}, Strength: #{@character.strength}, Vitality: #{@character.vitality}, Defense: #{@character.vitality}, Dexterity: #{@character.dexterity}, Intelligence: #{@character.intelligence}, Wisdom: #{@character.wisdom}, Ego: #{@character.ego}, Perception: #{@character.perception}, Charisma: #{@character.charisma}, Luck: #{@character.luck}]"
 
   print_who_am_i: (msg) ->
-    msg.send "You are #{msg.message.user.id} #{@character.race_article} #{@character.race} #{@character.class} #{@attribute_string}"
+    msg.send "You are #{msg.message.user.id} #{@character.race_article} #{@character.race} #{@character.character_class} #{@attribute_string}"
 
   print_reroll: (msg) ->
-    msg.send "You are now #{msg.message.user.id} #{@character.race_article} #{@character.race} #{@character.class} #{@attribute_string}"
+    msg.send "You are now #{msg.message.user.id} #{@character.race_article} #{@character.race} #{@character.character_class} #{@attribute_string}"
 
 class Monster
   constructor: (msg, robot) ->
@@ -33,10 +33,10 @@ module.exports = (robot) ->
 
     if msg.message.user.id == "mike"
       race = "Troll"
-      class = "Wizard"
+      character_class = "Wizard"
     else
       race = races[Math.floor(Math.random() * races.length)]
-      class = classes[Math.floor(Math.random() * classes.length)]
+      character_class = classes[Math.floor(Math.random() * classes.length)]
     
     race_article = if (race in ["Elf", "Orc", "Ogre"]) then "an" else "a"
 
@@ -54,9 +54,9 @@ module.exports = (robot) ->
     luck = die.roll()
 
     hp = switch
-      when class == "Wizard" then 20
-      when class == "Hunter" then 30
-      when class == "Warrior" then 40
+      when character_class == "Wizard" then 20
+      when character_class == "Hunter" then 30
+      when character_class == "Warrior" then 40
 
     hp = hp + vitality
 
@@ -77,7 +77,7 @@ module.exports = (robot) ->
       hitpoints_remaining: hp,
       race: race,
       race_article: race_article,
-      class: class
+      character_class: character_class
     }
 
     robot.brain.set("character-#{msg.message.user.id}", JSON.stringify(character_json))
