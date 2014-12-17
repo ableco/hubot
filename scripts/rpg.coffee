@@ -31,29 +31,53 @@ module.exports = (robot) ->
     races = ["Dwarf", "Elf", "Gnome", "Orc", "Human", "Goblin", "Troll", "Ogre", "Minotaur", "Halfling", "Kobold", "Giant"]
     classes = ["Wizard", "Hunter", "Warrior"]
 
-    race = races[Math.floor(Math.random() * races.length)]
+    if msg.message.user.id == "mike"
+      race = "Troll"
+      class = "Wizard"
+    else
+      race = races[Math.floor(Math.random() * races.length)]
+      class = classes[Math.floor(Math.random() * classes.length)]
+    
     race_article = if (race in ["Elf", "Orc", "Ogre"]) then "an" else "a"
 
     die = new Die(15)
 
+    strength = die.roll()
+    vitality = die.roll()
+    defense = die.roll()
+    dexterity = die.roll()
+    intelligence = die.roll()
+    wisdom = die.roll()
+    ego = die.roll()
+    perception = die.roll()
+    charisma = die.roll()
+    luck = die.roll()
+
+    hp = switch
+      when class == "Wizard" then 20
+      when class == "Hunter" then 30
+      when class == "Warrior" then 40
+
+    hp = hp + vitality
+
     character_json = {
       level: 1,
-      strength: die.roll(),
-      vitality: die.roll(),
-      defense: die.roll(),
-      dexterity: die.roll(),
-      intelligence: die.roll(),
-      wisdom: die.roll(),
-      ego: die.roll(),
-      perception: die.roll(),
-      charisma: die.roll(),
-      luck: die.roll(),
+      strength: strength,
+      vitality: vitality,
+      defense: defense,
+      dexterity: dexterity,
+      intelligence: intelligence,
+      wisdom: wisdom,
+      ego: ego,
+      perception: perception,
+      charisma: charisma,
+      luck: luck,
       experience: 1,
-      hitpoints: 100,
-      hitpoints_remaining: 100,
+      hitpoints: hp,
+      hitpoints_remaining: hp,
       race: race,
       race_article: race_article,
-      class: classes[Math.floor(Math.random() * classes.length)]
+      class: class
     }
 
     robot.brain.set("character-#{msg.message.user.id}", JSON.stringify(character_json))
