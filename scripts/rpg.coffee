@@ -3,6 +3,9 @@ class Character
     @character = character_json
     @attribute_string = "[Level: #{@character.level}, EXP: #{@character.experience}, HP: #{@character.hitpoints_remaining}/#{@character.hitpoints}, Strength: #{@character.strength}, Vitality: #{@character.vitality}, Defense: #{@character.vitality}, Dexterity: #{@character.dexterity}, Intelligence: #{@character.intelligence}, Wisdom: #{@character.wisdom}, Ego: #{@character.ego}, Perception: #{@character.perception}, Charisma: #{@character.charisma}, Luck: #{@character.luck}]"
 
+  dead: ->
+    @character.hitpoints_remaining <= 0
+
   print_who_am_i: (msg) ->
     msg.send "You are #{msg.message.user.id} #{@character.race_article} #{@character.race} #{@character.character_class} #{@attribute_string}"
 
@@ -18,23 +21,36 @@ class Character
       when "Wizard" then @character.intelligence
       when "Hunter" then @character.dexterity
       when "Warrior" then @character.strength
-    attack_score = base_attack + die.roll(20)
-
-    defense_score = die.roll(@attacked_character.luck) + die.roll(@attacked_character.dexterity)
-
-    console.log attack_score
-    console.log defense_score
+    base_attack_die_roll = die.roll(20)
+    attack_score = base_attack + base_attack_die_roll
+    defense_score = die.roll(@attacked_character.luck) + die.roll(@attacked_character.defense)
 
     msg.send "#{msg.message.user.id} (#{attack_score}) attacked #{name_of_person_being_attacked} (#{defense_score})"
 
-    if attack_score > defense_score
-      @character.experience = @character.experience + 1
-      @attacked_character.remaining_hitpoints = @attacked_character.remaining_hitpoints - 1
+    if base_attack_die_roll == 20 # critical strike if 20 is rolled
+      damage = 3 + die.roll(3) 
+    else if base_attack_die_roll == 1 # auto miss if 1 is rolled
+      damage = 0
+    else if attack_score > defense_score
+      damage = die.roll(3)
+    else
+      damage = 0
+
+    if damage > 0
+      @character.experience += 1
+      @attacked_character.hitpoints_remaining -= damage
+
+      if @attacked_character.hitpoints_remaining < 0 # killed
+        @character.experience += 5
+        msg.send "#{if base_attack_die_roll == 20 then 'CRITICAL STRIKE' else 'SUCCESS'}! #{msg.message.user.id} killed #{name_of_person_being_attacked} by doing #{damage} damage. RIP."
+      else
+        @character.experience += 1
+        msg.send "#{if base_attack_die_roll == 20 then 'CRITICAL STRIKE' else 'SUCCESS'}! #{msg.message.user.id} did #{damage} damage to #{name_of_person_being_attacked} who now has #{@attacked_character.hitpoints_remaining} hitpoints remaining."
+
       robot.brain.set("character-#{msg.message.user.id}", JSON.stringify(@character))
       robot.brain.set("character-#{name_of_person_being_attacked}", JSON.stringify(@attacked_character))
-      msg.send "Success!"
     else
-      msg.send "Failed!"
+      msg.send "Missed!"
 
 class Monster
   constructor: (msg, robot) ->
@@ -48,12 +64,18 @@ module.exports = (robot) ->
   # provides the user with information about their character
   robot.hear /who am i?/i, (msg) ->
     character = new Character(JSON.parse(robot.brain.get("character-#{msg.message.user.id}")))
-    character.print_who_am_i(msg)
+    if character.dead
+      msg.send "You are nobody. You are dead. Reroll to play again."
+    else
+      character.print_who_am_i(msg)
 
   robot.hear /attack (\w+)/i, (msg) ->
     person_being_attacked = msg.match[1]
     character = new Character(JSON.parse(robot.brain.get("character-#{msg.message.user.id}")))
-    character.attack(msg, robot, person_being_attacked)
+    if character.dead
+      msg.send "You are dead. You can't attack anybody. Reroll to play again."
+    else
+      character.attack(msg, robot, person_being_attacked)
 
   # regenerates the user's character
   robot.hear /reroll me/i, (msg) ->
