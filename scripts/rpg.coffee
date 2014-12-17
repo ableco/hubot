@@ -12,11 +12,20 @@ class Character
   attack: (msg, robot, name_of_person_being_attacked) ->
     @attacked_character = new Character(JSON.parse(robot.brain.get("character-#{name_of_person_being_attacked}")))
 
-    attack_score = @character.attack_score()
-    defense_score = @attacked_character.defense_score()
+    die = new Die
+
+    base_attack = switch @character.character_class
+      when "Wizard" then @character.intelligence
+      when "Hunter" then @character.dexterity
+      when "Warrior" then @character.strength
+    attack_score = base_attack + die.roll(20)
+
+    defense_score = die.roll(@attacked_character.luck) + die.roll(@attacked_character.dexterity)
 
     console.log attack_score
     console.log defense_score
+
+    msg.send "#{msg.message.user.id} (#{attack_score}) attacked #{name_of_person_being_attacked} (#{defense_score})"
 
     if attack_score > defense_score
       @character.experience = @character.experience + 1
@@ -26,20 +35,6 @@ class Character
       msg.send "Success!"
     else
       msg.send "Failed!"
-      
-  attack_score: ->
-    base_attack = switch @character.character_class
-      when "Wizard" then @character.intelligence
-      when "Hunter" then @character.dexterity
-      when "Warrior" then @character.strength
-
-    die = new Die
-    base_attack + die.roll(20)
-
-  defense_score: -> 
-    die = new Die
-    die.roll(@character.luck) + die.roll(@character.dexterity)
-
 
 class Monster
   constructor: (msg, robot) ->
