@@ -15,7 +15,7 @@ class Character
 
     robot.brain.set("character-#{msg.message.user.id}", JSON.stringify(character))
 
-    msg.send "You are now a #{character.race} #{character.class} [String: #{character.strength}, Dexterity: #{character.dexterity}, Inteligence: #{character.intelligence}, Wisom: #{character.wisdom}, Charisma: #{character.charisma}]."
+    msg.send "You are now a #{character.race} #{character.class} [Strength: #{character.strength}, Dexterity: #{character.dexterity}, Intelligence: #{character.intelligence}, Wisdom: #{character.wisdom}, Charisma: #{character.charisma}]"
 
 
 class Monster
@@ -24,7 +24,7 @@ class Monster
 
 module.exports = (robot) ->
   robot.hear /who am i?/i, (msg) ->
-    character = robot.brain.get("character-#{msg.message.user.id}")
+    character = JSON.parse(robot.brain.get("character-#{msg.message.user.id}"))
     msg.send "You are #{msg.message.user.id} a #{character.race} #{character.class} [String: #{character.strength}, Dexterity: #{character.dexterity}, Inteligence: #{character.intelligence}, Wisom: #{character.wisdom}, Charisma: #{character.charisma}]."
 
   robot.hear /reroll me/i, (msg) ->
