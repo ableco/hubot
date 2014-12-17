@@ -4,10 +4,10 @@ class Character
     @attribute_string = "[Level: #{@character.level}, EXP: #{@character.experience}, HP: #{@character.hitpoints_remaining}/#{@character.hitpoints}, Strength: #{@character.strength}, Vitality: #{@character.vitality}, Defense: #{@character.vitality}, Dexterity: #{@character.dexterity}, Intelligence: #{@character.intelligence}, Wisdom: #{@character.wisdom}, Ego: #{@character.ego}, Perception: #{@character.perception}, Charisma: #{@character.charisma}, Luck: #{@character.luck}]"
 
   print_who_am_i: (msg) ->
-    msg.send "You are #{msg.message.user.id} #{character.race_article} #{character.race} #{character.class} #{@attribute_string}"
+    msg.send "You are #{msg.message.user.id} #{@character.race_article} #{@character.race} #{@character.class} #{@attribute_string}"
 
   print_reroll: (msg) ->
-    msg.send "You are now #{msg.message.user.id} #{character.race_article} #{character.race} #{character.class} #{@attribute_string}"
+    msg.send "You are now #{msg.message.user.id} #{@character.race_article} #{@character.race} #{@character.class} #{@attribute_string}"
 
 class Monster
   constructor: (msg, robot) ->
