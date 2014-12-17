@@ -64,7 +64,7 @@ module.exports = (robot) ->
   # provides the user with information about their character
   robot.hear /who am i?/i, (msg) ->
     character = new Character(JSON.parse(robot.brain.get("character-#{msg.message.user.id}")))
-    if character.dead == true
+    if character.dead() == true
       msg.send "You are nobody. You are dead. Reroll to play again."
     else
       character.print_who_am_i(msg)
@@ -72,7 +72,7 @@ module.exports = (robot) ->
   robot.hear /attack (\w+)/i, (msg) ->
     person_being_attacked = msg.match[1]
     character = new Character(JSON.parse(robot.brain.get("character-#{msg.message.user.id}")))
-    if character.dead == true
+    if character.dead() == true
       msg.send "You are dead. You can't attack anybody. Reroll to play again."
     else
       character.attack(msg, robot, person_being_attacked)
