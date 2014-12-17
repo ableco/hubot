@@ -3,9 +3,6 @@ class Character
     @character = character_json
     @attribute_string = "[Level: #{@character.level}, EXP: #{@character.experience}, HP: #{@character.hitpoints_remaining}/#{@character.hitpoints}, Strength: #{@character.strength}, Vitality: #{@character.vitality}, Defense: #{@character.vitality}, Dexterity: #{@character.dexterity}, Intelligence: #{@character.intelligence}, Wisdom: #{@character.wisdom}, Ego: #{@character.ego}, Perception: #{@character.perception}, Charisma: #{@character.charisma}, Luck: #{@character.luck}]"
 
-  update_character: (username, character_json) ->
-    robot.brain.set("character-#{username}", JSON.stringify(character_json))
-
   print_who_am_i: (msg) ->
     msg.send "You are #{msg.message.user.id} #{@character.race_article} #{@character.race} #{@character.character_class} #{@attribute_string}"
 
@@ -18,6 +15,8 @@ class Character
     if @character.attack_score > @attacked_character.defense_score
       @character.experience = @character.experience + 1
       @attacked_character.remaining_hitpoints = @attacked_character.remaining_hitpoints - 1
+      robot.brain.set("character-#{msg.message.user.id}", JSON.stringify(@character))
+      robot.brain.set("character-#{name_of_person_being_attacked}", JSON.stringify(@attacked_character))
       msg.send "Success!"
     else
       msg.send "Failed!"
