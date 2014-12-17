@@ -12,7 +12,13 @@ class Character
   attack: (msg, robot, name_of_person_being_attacked) ->
     @attacked_character = new Character(JSON.parse(robot.brain.get("character-#{name_of_person_being_attacked}")))
 
-    if @character.attack_score > @attacked_character.defense_score
+    attack_score = @character.attack_score()
+    defense_score = @attacked_character.defense_score()
+
+    console.log attack_score
+    console.log defense_score
+
+    if attack_score > defense_score
       @character.experience = @character.experience + 1
       @attacked_character.remaining_hitpoints = @attacked_character.remaining_hitpoints - 1
       robot.brain.set("character-#{msg.message.user.id}", JSON.stringify(@character))
