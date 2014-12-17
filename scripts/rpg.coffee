@@ -7,10 +7,10 @@ class Character
     @character.hitpoints_remaining <= 0
 
   print_who_am_i: (msg) ->
-    msg.send "You are #{msg.message.user.id} #{@character.race_article} #{@character.race} #{@character.character_class} #{@attribute_string}"
+    msg.send "You are #{@character.race_article} #{@character.race} #{@character.character_class} named #{msg.message.user.id} #{@attribute_string}"
 
   print_reroll: (msg) ->
-    msg.send "You are now #{msg.message.user.id} #{@character.race_article} #{@character.race} #{@character.character_class} #{@attribute_string}"
+    msg.send "You are now #{@character.race_article} #{@character.race} #{@character.character_class} named #{msg.message.user.id} #{@attribute_string}"
 
   attack: (msg, robot, name_of_person_being_attacked) ->
     @attacked_character = JSON.parse(robot.brain.get("character-#{name_of_person_being_attacked}"))
@@ -42,7 +42,7 @@ class Character
       if damage > 0
         @attacked_character.hitpoints_remaining -= damage
 
-        if @attacked_character.hitpoints_remaining < 0 # killed
+        if @attacked_character.hitpoints_remaining <= 0 # killed
           @character.experience += 5
           msg.send "#{if base_attack_die_roll == 20 then 'CRITICAL STRIKE' else 'SUCCESS'}! #{msg.message.user.id} (+5 exp) killed #{name_of_person_being_attacked} by doing #{damage} damage. RIP."
         else
