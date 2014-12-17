@@ -49,7 +49,7 @@ module.exports = (robot) ->
     character = new Character(JSON.parse(robot.brain.get("character-#{msg.message.user.id}")))
     character.print_who_am_i(msg)
 
-  robot.hear /attack @(\w+)/i, (msg) ->
+  robot.hear /attack (\w+)/i, (msg) ->
     person_being_attacked = msg.match[1]
     character = new Character(JSON.parse(robot.brain.get("character-#{msg.message.user.id}")))
     character.attack(msg, person_being_attacked)
