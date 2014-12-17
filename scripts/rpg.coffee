@@ -10,7 +10,7 @@ class Character
     msg.send "You are now #{msg.message.user.id} #{@character.race_article} #{@character.race} #{@character.character_class} #{@attribute_string}"
 
   attack: (msg, robot, name_of_person_being_attacked) ->
-    @attacked_character = new Character(JSON.parse(robot.brain.get("character-#{name_of_person_being_attacked}")))
+    @attacked_character = JSON.parse(robot.brain.get("character-#{name_of_person_being_attacked}"))
 
     die = new Die
 
