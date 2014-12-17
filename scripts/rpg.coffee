@@ -9,7 +9,7 @@ class Character
   print_reroll: (msg) ->
     msg.send "You are now #{msg.message.user.id} #{@character.race_article} #{@character.race} #{@character.character_class} #{@attribute_string}"
 
-  attack: (msg, name_of_person_being_attacked) ->
+  attack: (msg, robot, name_of_person_being_attacked) ->
     @attacked_character = new Character(JSON.parse(robot.brain.get("character-#{name_of_person_being_attacked}")))
 
     if @character.attack_score > @attacked_character.defense_score
@@ -52,7 +52,7 @@ module.exports = (robot) ->
   robot.hear /attack (\w+)/i, (msg) ->
     person_being_attacked = msg.match[1]
     character = new Character(JSON.parse(robot.brain.get("character-#{msg.message.user.id}")))
-    character.attack(msg, person_being_attacked)
+    character.attack(msg, robot, person_being_attacked)
 
   # regenerates the user's character
   robot.hear /reroll me/i, (msg) ->
