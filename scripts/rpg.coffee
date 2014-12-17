@@ -14,11 +14,8 @@ class Monster
     # create monster
 
 class Die
-  constructor: (sides) ->
-    @sides = sides
-
-  roll: ->
-    (Math.floor(Math.random() * @sides) + 1)
+  roll: (sides) ->
+    (Math.floor(Math.random() * sides) + 1)
 
 module.exports = (robot) ->
   # provides the user with information about their character
@@ -40,32 +37,31 @@ module.exports = (robot) ->
     
     race_article = if (race in ["Elf", "Orc", "Ogre"]) then "an" else "a"
 
-    fifteen_sided_die = new Die(15)
-    six_sided_die = new Die(6)
+    die = new Die
 
-    strength = die.roll()
-    vitality = die.roll()
-    defense = die.roll()
-    dexterity = die.roll()
-    intelligence = die.roll()
-    wisdom = die.roll()
-    ego = die.roll()
-    perception = die.roll()
-    charisma = die.roll()
-    luck = die.roll()
+    strength = die.roll(15)
+    vitality = die.roll(15)
+    defense = die.roll(15)
+    dexterity = die.roll(15)
+    intelligence = die.roll(15)
+    wisdom = die.roll(15)
+    ego = die.roll(15)
+    perception = die.roll(15)
+    charisma = die.roll(15)
+    luck = die.roll(15)
 
     if character_class == "Wizard"
       hp = 20 + vitality
       intelligence = 7 if intelligence < 7
-      intelligence += six_sided_die.roll()
+      intelligence += die.roll(6)
     else if character_class == "Hunter"
       hp = 30 + vitality
       dexterity = 7 if dexterity < 7
-      dexterity += six_sided_die.roll()
+      dexterity += die.roll(6)
     else if character_class == "Warrior"
       hp = 40 + vitality
       strength = 7 if strength < 7
-      strength += six_sided_die.roll()
+      strength += die.roll(6)
 
     character_json = {
       level: 1,
