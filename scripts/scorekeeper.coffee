@@ -62,3 +62,14 @@ module.exports = (robot) ->
     question = robot.brain.get("current-trivia-question-#{msg.message.room}")
     robot.brain.remove("current-trivia-question-#{msg.message.room}")
     msg.send "LOLZ, the answer was '#{question.answer.replace(/[^a-zA-Z0-9\-\s\']/g, '').toUpperCase()}'."
+
+
+# TODO:
+
+# cases in which to skip to new question
+# value is null
+# question contains the words seen here
+
+# strip out anything in parenthesis in the answer
+
+# 
