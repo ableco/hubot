@@ -140,7 +140,7 @@ module.exports = (robot) ->
       monster_type: monster_type
     }
 
-    robot.brain.set("character-monster}", JSON.stringify(character_json))
+    robot.brain.set("character-monster", JSON.stringify(character_json))
     monster = new Monster(character_json)
     monster.print_spawn(msg)
 
