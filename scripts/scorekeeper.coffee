@@ -12,6 +12,10 @@ module.exports = (robot) ->
 
     if question and msg.message.text.toLowerCase().indexOf(answer) >= 0
       robot.brain.remove("current-trivia-question-#{room}")
+
+      reactions = ["G8", "Great", "Nice job"]
+      reaction = reactions[Math.floor(Math.random() * reactions.length)]
+
       msg.send "Nice job, #{sender}! '#{question.answer.toUpperCase()}' is correct"
       if room == "water-cooler"
         data = JSON.stringify({
@@ -22,19 +26,17 @@ module.exports = (robot) ->
           .post(data) (err, res, body) ->
             console.log body
     else
-      last_sender = robot.brain.get("#{room}-last-sender")
-      unless sender == last_sender
-        data = JSON.stringify({
-          user: sender,
-          room: room
-        })
-        msg.http("http://disrupto-scorekeeper.herokuapp.com/comment")
-          .post(data) (err, res, body) ->
-            console.log body
-        robot.brain.set("#{room}-last-sender", sender)
-      
-    
-
+      unless question
+        last_sender = robot.brain.get("#{room}-last-sender")
+        unless sender == last_sender
+          data = JSON.stringify({
+            user: sender,
+            room: room
+          })
+          msg.http("http://disrupto-scorekeeper.herokuapp.com/comment")
+            .post(data) (err, res, body) ->
+              console.log body
+          robot.brain.set("#{room}-last-sender", sender)
 
   robot.hear /(^|\s)([\+|\-]\d+)/i, (msg) ->
     score = msg.match[2]
@@ -65,7 +67,7 @@ module.exports = (robot) ->
     question = robot.brain.get("current-trivia-question-#{msg.message.room}")
     robot.brain.remove("current-trivia-question-#{msg.message.room}")
     
-    answer = question.answer.replace(/(<([^>]+)>)/ig, '').toLowerCase()
+    answer = question.answer.replace(/(<([^>]+)>)/ig, '').toUpperCase()
     answer = answer.replace(/[^a-zA-Z0-9\-\s\']/g, ' ')
 
     reactions = ["LOLZ", "G8", "Great", "Nice job", "That was a tough one", "Thanks for nothing", "You really turchioed that one"]
