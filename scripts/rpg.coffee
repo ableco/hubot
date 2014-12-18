@@ -97,7 +97,7 @@ module.exports = (robot) ->
 
   robot.hear /show me the monster/i, (msg) ->
     monster = new Monster(JSON.parse(robot.brain.get("character-monster")))
-    monster.print_show()
+    monster.print_show(msg)
 
   robot.hear /attack (\w+)/i, (msg) ->
     person_being_attacked = msg.match[1]
