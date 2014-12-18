@@ -15,51 +15,58 @@ class Character
   attack: (msg, robot, name_of_person_being_attacked) ->
     @attacked_character = JSON.parse(robot.brain.get("character-#{name_of_person_being_attacked}"))
 
+    if name_of_person_being_attacked == "monster"
+      name_of_person_being_attacked = "the #{@attacked_character.monster_type}"
+
     if @attacked_character.hitpoints_remaining <= 0
       msg.send "You animal. #{name_of_person_being_attacked} is already dead!"
     else
       die = new Die
       base_attack = switch @character.character_class
-        when "Wizard" then @character.intelligence
-        when "Hunter" then @character.dexterity
-        when "Warrior" then @character.Strength
+      when "Wizard" then @character.intelligence
+      when "Hunter" then @character.dexterity
+      when "Warrior" then @character.strength
 
-      while (@attacked_character.hitpoints_remaining > 0) and (@character.hitpoints_remaining > 0)
-        base_attack_die_roll = die.roll(20)
-        attack_score = base_attack + base_attack_die_roll
-        defense_score = die.roll(@attacked_character.luck) + die.roll(@attacked_character.defense)
+      base_attack_die_roll = die.roll(20)
+      attack_score = base_attack + base_attack_die_roll
+      defense_score = die.roll(@attacked_character.luck) + die.roll(@attacked_character.defense)
 
-        msg.send "#{msg.message.user.id} (#{attack_score}) attacked #{name_of_person_being_attacked} (#{defense_score})"
+      msg.send "#{msg.message.user.id} (#{attack_score}) attacked #{name_of_person_being_attacked} (#{defense_score})"
 
-        if base_attack_die_roll == 20 # critical strike if 20 is rolled
-          damage = 3 + die.roll(3) 
-        else if base_attack_die_roll == 1 # auto miss if 1 is rolled
-          damage = 0
-        else if attack_score > defense_score
-          damage = die.roll(3)
+      if base_attack_die_roll == 20 # critical strike if 20 is rolled
+        damage = 3 + die.roll(3) 
+      else if base_attack_die_roll == 1 # auto miss if 1 is rolled
+        damage = 0
+      else if attack_score > defense_score
+        damage = die.roll(3)
+      else
+        damage = 0
+
+      if damage > 0
+        @attacked_character.hitpoints_remaining -= damage
+
+        if @attacked_character.hitpoints_remaining <= 0 # killed
+          @character.experience += @attacked_character.experience
+          @character.hitpoints_remaining = @character.hitpoints
+          msg.send "#{if base_attack_die_roll == 20 then 'CRITICAL STRIKE' else 'SUCCESS'}! #{msg.message.user.id} (+5 exp) killed #{name_of_person_being_attacked} by doing #{damage} damage. RIP."
         else
-          damage = 0
+          @character.experience += 1
+          msg.send "#{if base_attack_die_roll == 20 then 'CRITICAL STRIKE' else 'SUCCESS'}! #{msg.message.user.id} (+1 exp) did #{damage} damage to #{name_of_person_being_attacked} who now has #{@attacked_character.hitpoints_remaining} hitpoints remaining."
 
-        if damage > 0
-          @attacked_character.hitpoints_remaining -= damage
+        robot.brain.set("character-#{msg.message.user.id}", JSON.stringify(@character))
+      else
+        @attacked_character.experience += 1
+        msg.send "#{name_of_person_being_attacked} (+1 exp) dodged #{msg.message.user.id}'s attack!"
 
-          if @attacked_character.hitpoints_remaining <= 0 # killed
-            @character.experience += 5
-            msg.send "#{if base_attack_die_roll == 20 then 'CRITICAL STRIKE' else 'SUCCESS'}! #{msg.message.user.id} (+5 exp) killed #{name_of_person_being_attacked} by doing #{damage} damage. RIP."
-          else
-            @character.experience += 1
-            msg.send "#{if base_attack_die_roll == 20 then 'CRITICAL STRIKE' else 'SUCCESS'}! #{msg.message.user.id} (+1 exp) did #{damage} damage to #{name_of_person_being_attacked} who now has #{@attacked_character.hitpoints_remaining} hitpoints remaining."
-
-          robot.brain.set("character-#{msg.message.user.id}", JSON.stringify(@character))
-        else
-          @attacked_character.experience += 1
-          msg.send "#{name_of_person_being_attacked} (+1 exp) dodged #{msg.message.user.id}'s attack!"
-
-        robot.brain.set("character-#{name_of_person_being_attacked}", JSON.stringify(@attacked_character))
+      robot.brain.set("character-#{name_of_person_being_attacked}", JSON.stringify(@attacked_character))
 
 class Monster
-  constructor: (msg, robot) ->
-    # create monster
+  constructor: (monster_json) ->
+    @character = monster_json
+    @attribute_string = "[EXP: #{@character.experience}, HP: #{@character.hitpoints_remaining}/#{@character.hitpoints}, Strength: #{@character.strength}, Vitality: #{@character.vitality}, Defense: #{@character.vitality}, Dexterity: #{@character.dexterity}, Intelligence: #{@character.intelligence}, Wisdom: #{@character.wisdom}, Ego: #{@character.ego}, Perception: #{@character.perception}, Charisma: #{@character.charisma}, Luck: #{@character.luck}]"
+
+  print_spawn: (msg) ->
+    msg.send "A #{@character.monster_type} has appeared! #{@attribute_string}"
 
 class Die
   roll: (sides) ->
@@ -81,6 +88,61 @@ module.exports = (robot) ->
       msg.send "You are dead. You can't attack anybody. Reroll to play again."
     else
       character.attack(msg, robot, person_being_attacked)
+
+  robot.head /spawn monster/i, (msg) ->
+    types = ["Banshee", "Cyclops", "Demon", "Dragon", "Gargoyle", "Goblin", "Kraken", "Mummy", "Zombie", "Sandworm", "Louie"]
+
+    monster_type = types[Math.floor(Math.random() * types.length)]
+
+    die = new Die
+
+    strength = die.roll(15)
+    vitality = die.roll(15)
+    defense = die.roll(15)
+    dexterity = die.roll(15)
+    intelligence = die.roll(15)
+    wisdom = die.roll(15)
+    ego = die.roll(15)
+    perception = die.roll(15)
+    charisma = die.roll(15)
+    luck = die.roll(15)
+
+    if (monster_type == "Sandworm") or (monster_type == "Dragon")
+      hp = 50 + vitality
+      strength = 10 if strength < 10
+      strength += die.roll(10)
+      experience = 25
+    else if monster_type == "Louie"
+      hp = 30 + vitality
+      defense = 7 if defense < 7
+      defense += defense.roll(6)
+      wisdom = die.roll(5)
+      intelligence = die.roll(5)
+      experience = 15
+    else
+      hp = 20 + vitality
+      experience = 10
+
+    character_json = {
+      strength: strength,
+      vitality: vitality,
+      defense: defense,
+      dexterity: dexterity,
+      intelligence: intelligence,
+      wisdom: wisdom,
+      ego: ego,
+      perception: perception,
+      charisma: charisma,
+      luck: luck,
+      experience: experience,
+      hitpoints: hp,
+      hitpoints_remaining: hp,
+      monster_type: monster_type
+    }
+
+    robot.brain.set("character-monster}", JSON.stringify(character_json))
+    monster = new Monster(character_json)
+    monster.print_spawn(msg)
 
   # regenerates the user's character
   robot.hear /reroll me/i, (msg) ->
