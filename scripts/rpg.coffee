@@ -89,7 +89,7 @@ module.exports = (robot) ->
     else
       character.attack(msg, robot, person_being_attacked)
 
-  robot.head /spawn monster/i, (msg) ->
+  robot.hear /spawn monster/i, (msg) ->
     types = ["Banshee", "Cyclops", "Demon", "Dragon", "Gargoyle", "Goblin", "Kraken", "Mummy", "Zombie", "Sandworm", "Louie"]
 
     monster_type = types[Math.floor(Math.random() * types.length)]
