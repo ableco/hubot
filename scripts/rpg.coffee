@@ -6,6 +6,9 @@ class Character
   dead: ->
     @character.hitpoints_remaining <= 0
 
+  print_show: (msg, name) ->
+    msg.send "#{name} is #{@character.race_article} #{@character.race} #{@character.character_class} #{@attribute_string}"
+
   print_who_am_i: (msg) ->
     msg.send "You are #{@character.race_article} #{@character.race} #{@character.character_class} named #{msg.message.user.id} #{@attribute_string}"
 
@@ -68,18 +71,33 @@ class Monster
   print_spawn: (msg) ->
     msg.send "A #{@character.monster_type} has appeared! #{@attribute_string}"
 
+  print_show: (msg) ->
+    msg.send "There is a #{@character.monster_type} here! #{@attribute_string}"
+
 class Die
   roll: (sides) ->
     (Math.floor(Math.random() * sides) + 1)
 
 module.exports = (robot) ->
   # provides the user with information about their character
-  robot.hear /who am i?/i, (msg) ->
+  robot.hear /who am i/i, (msg) ->
     character = new Character(JSON.parse(robot.brain.get("character-#{msg.message.user.id}")))
     if character.dead() == true
       msg.send "You are nobody. You are dead. Reroll to play again."
     else
       character.print_who_am_i(msg)
+
+  robot.hear /show me (\w+)/i, (msg) ->
+    person_in_question = msg.match[1]
+    character = new Character(JSON.parse(robot.brain.get("character-#{person_in_question}")))
+    if character.dead() == true
+      msg.send "#{person_in_question} is dead."
+    else
+      character.print_show(msg, person_in_question)
+
+  robot.hear /show me the monster/i, (msg) ->
+    monster = new Monster(JSON.parse(robot.brain.get("character-monster")))
+    monster.print_show()
 
   robot.hear /attack (\w+)/i, (msg) ->
     person_being_attacked = msg.match[1]
