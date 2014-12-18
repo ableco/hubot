@@ -31,9 +31,9 @@ class Character
         when "Hunter" then @character.dexterity
         when "Warrior" then @character.strength
 
-      base_attack_die_roll = die.roll(14 + @character.level)
+      base_attack_die_roll = die.roll(10 + @character.level)
       attack_score = base_attack + base_attack_die_roll
-      defense_score = die.roll(@attacked_character.luck) + die.roll(@attacked_character.defense)
+      defense_score = die.roll(@attacked_character.luck) + die.roll(@attacked_character.defense) + die.roll(@attacked_character.perception)
 
       msg.send "#{msg.message.user.id} (#{attack_score}) attacked #{name_of_person_being_attacked} (#{defense_score})"
 
@@ -60,7 +60,7 @@ class Character
           @character.experience += 1
           msg.send "#{if base_attack_die_roll == 20 then 'CRITICAL STRIKE' else 'SUCCESS'}! #{msg.message.user.id} (+1 exp) did #{damage} damage to #{name_of_person_being_attacked} who now has #{@attacked_character.hitpoints_remaining} hitpoints remaining."
       else
-        if (die.roll(@attacked_character.perception) + die.roll(@attacked_character.luck)) >= die.roll(@character.defense * 2)
+        if (die.roll(@attacked_character.perception) + die.roll(@attacked_character.luck)) >= (die.roll(@character.defense) + die.roll(@character.luck))
           if attacking_monster == true
             damage = die.roll(@attacked_character.strength)
             @character.hitpoints_remaining -= damage
@@ -174,7 +174,7 @@ module.exports = (robot) ->
       experience = 15
     else
       hp = 20 + vitality
-      experience = 10
+      experience = 5 + defense
 
     character_json = {
       strength: strength,
