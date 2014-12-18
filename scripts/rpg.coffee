@@ -31,7 +31,7 @@ class Character
         when "Hunter" then @character.dexterity
         when "Warrior" then @character.strength
 
-      base_attack_die_roll = die.roll(10 + @character.level)
+      base_attack_die_roll = die.roll(7 + @character.level)
       attack_score = base_attack + base_attack_die_roll
       defense_score = die.roll(@attacked_character.luck) + die.roll(@attacked_character.defense) + die.roll(@attacked_character.perception)
 
