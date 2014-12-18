@@ -135,12 +135,15 @@ module.exports = (robot) ->
     monster.print_show(msg)
 
   robot.hear /attack (\w+)/i, (msg) ->
-    person_being_attacked = msg.match[1]
-    character = new Character(JSON.parse(robot.brain.get("character-#{msg.message.user.id}")))
-    if character.dead() == true
-      msg.send "You are dead. You can't attack anybody. Reroll to play again."
+    if msg.message.room == "world-of-disrupto"
+      person_being_attacked = msg.match[1]
+      character = new Character(JSON.parse(robot.brain.get("character-#{msg.message.user.id}")))
+      if character.dead() == true
+        msg.send "You are dead. You can't attack anybody. Reroll to play again."
+      else
+        character.attack(msg, robot, person_being_attacked)
     else
-      character.attack(msg, robot, person_being_attacked)
+      msg.send "Sorry, you can only attack people in #world-of-disrupto."
 
   robot.hear /spawn monster/i, (msg) ->
     types = ["Banshee", "Cyclops", "Demon", "Dragon", "Gargoyle", "Goblin", "Kraken", "Mummy", "Zombie", "Sandworm", "Turchioe"]
@@ -199,65 +202,70 @@ module.exports = (robot) ->
 
   # regenerates the user's character
   robot.hear /reroll me/i, (msg) ->
-    races = ["Dwarf", "Elf", "Gnome", "Orc", "Human", "Goblin", "Troll", "Ogre", "Minotaur", "Halfling", "Kobold", "Giant"]
-    classes = ["Wizard", "Hunter", "Warrior"]
+    character = new Character(JSON.parse(robot.brain.get("character-#{msg.message.user.id}")))
 
-    if msg.message.user.id == "mike"
-      race = "Troll"
-      character_class = "Wizard"
+    if character and character.hitpoints_remaining > 0
+      msg.send "You can't reroll when you already have a character."
     else
-      race = races[Math.floor(Math.random() * races.length)]
-      character_class = classes[Math.floor(Math.random() * classes.length)]
-    
-    race_article = if (race in ["Elf", "Orc", "Ogre"]) then "an" else "a"
+      races = ["Dwarf", "Elf", "Gnome", "Orc", "Human", "Goblin", "Troll", "Ogre", "Minotaur", "Halfling", "Kobold", "Giant"]
+      classes = ["Wizard", "Hunter", "Warrior"]
 
-    die = new Die
+      if msg.message.user.id == "mike"
+        race = "Troll"
+        character_class = "Wizard"
+      else
+        race = races[Math.floor(Math.random() * races.length)]
+        character_class = classes[Math.floor(Math.random() * classes.length)]
+      
+      race_article = if (race in ["Elf", "Orc", "Ogre"]) then "an" else "a"
 
-    strength = die.roll(15)
-    vitality = die.roll(15)
-    defense = die.roll(15)
-    dexterity = die.roll(15)
-    intelligence = die.roll(15)
-    wisdom = die.roll(15)
-    ego = die.roll(15)
-    perception = die.roll(15)
-    charisma = die.roll(15)
-    luck = die.roll(15)
+      die = new Die
 
-    if character_class == "Wizard"
-      hp = 20 + vitality
-      intelligence = 7 if intelligence < 7
-      intelligence += die.roll(5)
-    else if character_class == "Hunter"
-      hp = 30 + vitality
-      dexterity = 7 if dexterity < 7
-      dexterity += die.roll(5)
-    else if character_class == "Warrior"
-      hp = 40 + vitality
-      strength = 7 if strength < 7
-      strength += die.roll(5)
+      strength = die.roll(15)
+      vitality = die.roll(15)
+      defense = die.roll(15)
+      dexterity = die.roll(15)
+      intelligence = die.roll(15)
+      wisdom = die.roll(15)
+      ego = die.roll(15)
+      perception = die.roll(15)
+      charisma = die.roll(15)
+      luck = die.roll(15)
 
-    character_json = {
-      level: 1,
-      strength: strength,
-      vitality: vitality,
-      defense: defense,
-      dexterity: dexterity,
-      intelligence: intelligence,
-      wisdom: wisdom,
-      ego: ego,
-      perception: perception,
-      charisma: charisma,
-      luck: luck,
-      experience: 1,
-      hitpoints: hp,
-      hitpoints_remaining: hp,
-      race: race,
-      race_article: race_article,
-      character_class: character_class
-    }
+      if character_class == "Wizard"
+        hp = 20 + vitality
+        intelligence = 7 if intelligence < 7
+        intelligence += die.roll(5)
+      else if character_class == "Hunter"
+        hp = 30 + vitality
+        dexterity = 7 if dexterity < 7
+        dexterity += die.roll(5)
+      else if character_class == "Warrior"
+        hp = 40 + vitality
+        strength = 7 if strength < 7
+        strength += die.roll(5)
 
-    robot.brain.set("character-#{msg.message.user.id}", JSON.stringify(character_json))
+      character_json = {
+        level: 1,
+        strength: strength,
+        vitality: vitality,
+        defense: defense,
+        dexterity: dexterity,
+        intelligence: intelligence,
+        wisdom: wisdom,
+        ego: ego,
+        perception: perception,
+        charisma: charisma,
+        luck: luck,
+        experience: 1,
+        hitpoints: hp,
+        hitpoints_remaining: hp,
+        race: race,
+        race_article: race_article,
+        character_class: character_class
+      }
 
-    character = new Character(character_json)
-    character.print_reroll(msg)
+      robot.brain.set("character-#{msg.message.user.id}", JSON.stringify(character_json))
+
+      character = new Character(character_json)
+      character.print_reroll(msg)
