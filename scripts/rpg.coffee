@@ -52,8 +52,10 @@ class Character
         if @attacked_character.hitpoints_remaining <= 0 # killed
           experience = @attacked_character.experience
           @character.experience += experience
-          @character.hitpoints_remaining = @character.hitpoints
-          msg.send "#{if base_attack_die_roll == 20 then 'CRITICAL STRIKE' else 'SUCCESS'}! #{msg.message.user.id} (+#{experience} exp) killed #{name_of_person_being_attacked} by doing #{damage} damage. RIP."
+          @character.hitpoints_remaining += (@character.vitality + @character.level)
+          if @character.hitpoints_remaining > @character.hitpoints
+            @character.hitpoints_remaining = @character.hitpoints
+          msg.send "#{if base_attack_die_roll == 20 then 'CRITICAL STRIKE' else 'SUCCESS'}! #{msg.message.user.id} (+#{experience} exp) killed #{name_of_person_being_attacked} by doing #{damage} damage. Bravo!"
         else
           @character.experience += 1
           msg.send "#{if base_attack_die_roll == 20 then 'CRITICAL STRIKE' else 'SUCCESS'}! #{msg.message.user.id} (+1 exp) did #{damage} damage to #{name_of_person_being_attacked} who now has #{@attacked_character.hitpoints_remaining} hitpoints remaining."
