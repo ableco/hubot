@@ -16,9 +16,10 @@ class Character
     msg.send "You are now #{@character.race_article} #{@character.race} #{@character.character_class} named #{msg.message.user.id} #{@attribute_string}"
 
   attack: (msg, robot, name_of_person_being_attacked) ->
+    attacking_monster = name_of_person_being_attacked == "monster"
     @attacked_character = JSON.parse(robot.brain.get("character-#{name_of_person_being_attacked}"))
 
-    if name_of_person_being_attacked == "monster"
+    if attacking_monster == true
       name_of_person_being_attacked = "the #{@attacked_character.monster_type}"
 
     if @attacked_character.hitpoints_remaining <= 0
@@ -37,11 +38,11 @@ class Character
       msg.send "#{msg.message.user.id} (#{attack_score}) attacked #{name_of_person_being_attacked} (#{defense_score})"
 
       if base_attack_die_roll == 20 # critical strike if 20 is rolled
-        damage = 3 + die.roll(3) 
+        damage = base_attack + die.roll(5) 
       else if base_attack_die_roll == 1 # auto miss if 1 is rolled
         damage = 0
       else if attack_score > defense_score
-        damage = die.roll(3)
+        damage = die.roll(base_attack)
       else
         damage = 0
 
@@ -49,19 +50,44 @@ class Character
         @attacked_character.hitpoints_remaining -= damage
 
         if @attacked_character.hitpoints_remaining <= 0 # killed
-          @character.experience += @attacked_character.experience
+          experience = @attacked_character.experience
+          @character.experience += experience
           @character.hitpoints_remaining = @character.hitpoints
-          msg.send "#{if base_attack_die_roll == 20 then 'CRITICAL STRIKE' else 'SUCCESS'}! #{msg.message.user.id} (+5 exp) killed #{name_of_person_being_attacked} by doing #{damage} damage. RIP."
+          msg.send "#{if base_attack_die_roll == 20 then 'CRITICAL STRIKE' else 'SUCCESS'}! #{msg.message.user.id} (+#{experience} exp) killed #{name_of_person_being_attacked} by doing #{damage} damage. RIP."
         else
           @character.experience += 1
           msg.send "#{if base_attack_die_roll == 20 then 'CRITICAL STRIKE' else 'SUCCESS'}! #{msg.message.user.id} (+1 exp) did #{damage} damage to #{name_of_person_being_attacked} who now has #{@attacked_character.hitpoints_remaining} hitpoints remaining."
-
-        robot.brain.set("character-#{msg.message.user.id}", JSON.stringify(@character))
       else
-        @attacked_character.experience += 1
-        msg.send "#{name_of_person_being_attacked} (+1 exp) dodged #{msg.message.user.id}'s attack!"
+        if (die.roll(@attacked_character.perception) + die.roll(@attacked_character.luck)) >= die.roll(@character.defense * 2)
+          if attacking_monster == true
+            damage = die.roll(@attacked_character.strength)
+            @character.hitpoints_remaining -= damage
+            msg.send "#{name_of_person_being_attacked} dodged #{msg.message.user.id}'s attack and countered to do #{damage} damage!"  
+          else
+            base_counterattack = switch @attacked_character.character_class
+              when "Wizard" then @attacked_character.intelligence
+              when "Hunter" then @attacked_character.dexterity
+              when "Warrior" then @attacked_character.strength
+            damage = die.roll(base_counterattack)
+            @attacked_character.experience += 3
+            @character.hitpoints_remaining -= damage
+            msg.send "#{name_of_person_being_attacked} (+3 exp) dodged #{msg.message.user.id}'s attack and countered to do #{damage} damage!"
 
-      robot.brain.set("character-#{name_of_person_being_attacked}", JSON.stringify(@attacked_character))
+          if @character.hitpoints_remaining <= 0
+            if attacking_monster == true
+              msg.send "#{msg.message.user.id} has died. Good riddance."
+            else
+              @attacked_character.experience += 5
+              msg.send "#{msg.message.user.id} has died. Nice Job! (+5 exp for #{name_of_person_being_attacked})!"
+        else
+          msg.send "#{name_of_person_being_attacked} dodged #{msg.message.user.id}'s attack!"
+
+      # save all character info after attack
+      robot.brain.set("character-#{msg.message.user.id}", JSON.stringify(@character))
+      if attacking_monster == true
+        robot.brain.set("character-monster", JSON.stringify(@attacked_character))
+      else
+        robot.brain.set("character-#{name_of_person_being_attacked}", JSON.stringify(@attacked_character))
 
 class Monster
   constructor: (monster_json) ->
