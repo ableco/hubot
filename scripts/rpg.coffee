@@ -84,11 +84,13 @@ class Character
 
       # save all character info after attack
       level = @character.level
-      new_level = Match.floor(@character.experience / 100) + 1
+      new_level = Math.floor(@character.experience / 100) + 1
+      
       if new_level > level
         msg.send "#{msg.message.user.id} has leveled up to level #{new_level}!"
       @character.level = new_level
       robot.brain.set("character-#{msg.message.user.id}", JSON.stringify(@character))
+
       if attacking_monster == true
         robot.brain.set("character-monster", JSON.stringify(@attacked_character))
       else
