@@ -64,9 +64,14 @@ module.exports = (robot) ->
   robot.respond /i give up/i, (msg) ->
     question = robot.brain.get("current-trivia-question-#{msg.message.room}")
     robot.brain.remove("current-trivia-question-#{msg.message.room}")
+    
     answer = question.answer.replace(/(<([^>]+)>)/ig, '').toLowerCase()
     answer = answer.replace(/[^a-zA-Z0-9\-\s\']/g, ' ')
-    msg.send "LOLZ, the answer was '#{answer}'."
+
+    reactions = ["LOLZ", "G8", "Great", "Nice job", "That was a tough one", "Thanks for nothing", "You really turchioed that one"]
+    reaction = reactions[Math.floor(Math.random() * reactions.length)]
+
+    msg.send "#{reaction}, the answer was '#{answer}'."
 
 
 # TODO:
