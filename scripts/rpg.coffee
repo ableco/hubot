@@ -31,13 +31,13 @@ class Character
         when "Hunter" then @character.dexterity
         when "Warrior" then @character.strength
 
-      base_attack_die_roll = die.roll(20)
+      base_attack_die_roll = die.roll(14 + @character.level)
       attack_score = base_attack + base_attack_die_roll
       defense_score = die.roll(@attacked_character.luck) + die.roll(@attacked_character.defense)
 
       msg.send "#{msg.message.user.id} (#{attack_score}) attacked #{name_of_person_being_attacked} (#{defense_score})"
 
-      if base_attack_die_roll == 20 # critical strike if 20 is rolled
+      if base_attack_die_roll == 15 # critical strike if 20 is rolled TODO: the odds of this decrease as level goes up...
         damage = base_attack + die.roll(5) 
       else if base_attack_die_roll == 1 # auto miss if 1 is rolled
         damage = 0
@@ -83,6 +83,11 @@ class Character
           msg.send "#{name_of_person_being_attacked} dodged #{msg.message.user.id}'s attack!"
 
       # save all character info after attack
+      level = @character.level
+      new_level = Match.floor(@character.experience / 100)
+      if new_level > level
+        msg.send "#{msg.message.user.id} has leveled up to level #{new_level}!"
+      @character.level = new_level
       robot.brain.set("character-#{msg.message.user.id}", JSON.stringify(@character))
       if attacking_monster == true
         robot.brain.set("character-monster", JSON.stringify(@attacked_character))
@@ -134,7 +139,7 @@ module.exports = (robot) ->
       character.attack(msg, robot, person_being_attacked)
 
   robot.hear /spawn monster/i, (msg) ->
-    types = ["Banshee", "Cyclops", "Demon", "Dragon", "Gargoyle", "Goblin", "Kraken", "Mummy", "Zombie", "Sandworm", "Louie"]
+    types = ["Banshee", "Cyclops", "Demon", "Dragon", "Gargoyle", "Goblin", "Kraken", "Mummy", "Zombie", "Sandworm", "Turchioe"]
 
     monster_type = types[Math.floor(Math.random() * types.length)]
 
@@ -156,7 +161,7 @@ module.exports = (robot) ->
       strength = 10 if strength < 10
       strength += die.roll(10)
       experience = 25
-    else if monster_type == "Louie"
+    else if monster_type == "Turchioe"
       hp = 30 + vitality
       defense = 7 if defense < 7
       defense += defense.roll(6)
@@ -218,15 +223,15 @@ module.exports = (robot) ->
     if character_class == "Wizard"
       hp = 20 + vitality
       intelligence = 7 if intelligence < 7
-      intelligence += die.roll(6)
+      intelligence += die.roll(5)
     else if character_class == "Hunter"
       hp = 30 + vitality
       dexterity = 7 if dexterity < 7
-      dexterity += die.roll(6)
+      dexterity += die.roll(5)
     else if character_class == "Warrior"
       hp = 40 + vitality
       strength = 7 if strength < 7
-      strength += die.roll(6)
+      strength += die.roll(5)
 
     character_json = {
       level: 1,
