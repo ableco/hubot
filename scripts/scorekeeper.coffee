@@ -16,7 +16,7 @@ module.exports = (robot) ->
       reactions = ["G8", "Great", "Nice job"]
       reaction = reactions[Math.floor(Math.random() * reactions.length)]
 
-      msg.send "Nice job, #{sender}! '#{question.answer.toUpperCase()}' is correct"
+      msg.send "Nice job, #{sender}! '#{answer}' is correct"
       if room == "water-cooler"
         data = JSON.stringify({
           user: sender,
@@ -70,7 +70,7 @@ module.exports = (robot) ->
     answer = question.answer.replace(/(<([^>]+)>)/ig, '').toUpperCase()
     answer = answer.replace(/[^a-zA-Z0-9\-\s\']/g, ' ')
 
-    reactions = ["LOLZ", "G8", "Great", "Nice job", "That was a tough one", "Thanks for nothing", "You really turchioed that one"]
+    reactions = ["LOLZ", "G8", "Great", "Nice job", "That was a tough one", "Thanks for nothing", "Wow, you really turchioed that one"]
     reaction = reactions[Math.floor(Math.random() * reactions.length)]
 
     msg.send "#{reaction}, the answer was '#{answer}'."
