@@ -7,7 +7,10 @@ module.exports = (robot) ->
 
     # check if message was the answer to the current question
     question = robot.brain.get("current-trivia-question-#{room}")
-    if question and msg.message.text.toLowerCase().indexOf(question.answer.replace(/[^a-zA-Z0-9\-\s\']/g, '').toLowerCase()) >= 0
+    answer = question.answer.replace(/(<([^>]+)>)/ig, '').toLowerCase()
+    answer = answer.replace(/[^a-zA-Z0-9\-\s\']/g, ' ')
+
+    if question and msg.message.text.toLowerCase().indexOf(answer) >= 0
       robot.brain.remove("current-trivia-question-#{room}")
       msg.send "Nice job, #{sender}! '#{question.answer.toUpperCase()}' is correct"
       if room == "water-cooler"
