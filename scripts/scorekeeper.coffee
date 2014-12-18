@@ -64,7 +64,9 @@ module.exports = (robot) ->
   robot.respond /i give up/i, (msg) ->
     question = robot.brain.get("current-trivia-question-#{msg.message.room}")
     robot.brain.remove("current-trivia-question-#{msg.message.room}")
-    msg.send "LOLZ, the answer was '#{question.answer.replace(/[^a-zA-Z0-9\-\s\']/g, '').toUpperCase()}'."
+    answer = question.answer.replace(/(<([^>]+)>)/ig, '').toLowerCase()
+    answer = answer.replace(/[^a-zA-Z0-9\-\s\']/g, ' ')
+    msg.send "LOLZ, the answer was '#{answer}'."
 
 
 # TODO:
