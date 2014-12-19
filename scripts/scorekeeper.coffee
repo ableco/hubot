@@ -7,8 +7,10 @@ module.exports = (robot) ->
 
     # check if message was the answer to the current question
     question = robot.brain.get("current-trivia-question-#{room}")
-    answer = question.answer.replace(/(<([^>]+)>)/ig, '').toLowerCase()
-    answer = answer.replace(/[^a-zA-Z0-9\-\s\']/g, ' ')
+    answer = question.answer.replace(/(<([^>]+)>)/ig, '').toLowerCase() # remove html tags
+    answer = answer.replace(/[^a-zA-Z0-9\-\s\']/g, ' ') # remove any weird characters
+    answer = answer.replace(/^\s+|\s+$/g, '') # trim whitespace
+    answer = answer.replace(/\s{2,}/g, ' ') # replace two or more spaces with one
 
     if question and msg.message.text.toLowerCase().indexOf(answer) >= 0
       robot.brain.remove("current-trivia-question-#{room}")
