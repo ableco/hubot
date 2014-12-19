@@ -14,7 +14,7 @@ module.exports = (robot) ->
       reactions = ["G8", "Great", "Nice job"]
       reaction = reactions[Math.floor(Math.random() * reactions.length)]
 
-      msg.send "Nice job, #{sender}! '#{answer}' is correct"
+      msg.send "Nice job, #{sender}! '#{question.answer}' is correct"
       if room == "water-cooler"
         data = JSON.stringify({
           user: sender,
