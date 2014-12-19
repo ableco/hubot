@@ -8,7 +8,14 @@ module.exports = (robot) ->
     # check if message was the answer to the current question
     question = robot.brain.get("current-trivia-question-#{room}")
 
-    if question and msg.message.text.toLowerCase().indexOf(question.answer) >= 0
+    question_answered_correctly = false
+    if question
+      for answer in question.answers # ideally, do a uniq on the array
+        if msg.message.text.toLowerCase().indexOf(answer) >= 0
+          question_answered_correctly = true
+          break
+
+    if question_answered_correctly
       robot.brain.remove("current-trivia-question-#{room}")
 
       reactions = ["G8", "Great", "Nice job"]
@@ -81,7 +88,6 @@ module.exports = (robot) ->
         if splitup
           question.answers.push(splitup[1])
           question.answers.push(splitup[2])
-
 
         console.log question
 
