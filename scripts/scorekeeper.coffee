@@ -7,12 +7,8 @@ module.exports = (robot) ->
 
     # check if message was the answer to the current question
     question = robot.brain.get("current-trivia-question-#{room}")
-    answer = question.answer.replace(/(<([^>]+)>)/ig, '').toLowerCase() # remove html tags
-    answer = answer.replace(/[^a-zA-Z0-9\-\s\']/g, ' ') # remove any weird characters
-    answer = answer.replace(/^\s+|\s+$/g, '') # trim whitespace
-    answer = answer.replace(/\s{2,}/g, ' ') # replace two or more spaces with one
 
-    if question and msg.message.text.toLowerCase().indexOf(answer) >= 0
+    if question and msg.message.text.toLowerCase().indexOf(question.answer) >= 0
       robot.brain.remove("current-trivia-question-#{room}")
 
       reactions = ["G8", "Great", "Nice job"]
@@ -62,20 +58,25 @@ module.exports = (robot) ->
     msg.http("http://jservice.io/api/random")
       .get() (err, res, body) ->
         question = JSON.parse(body)[0]
+
+        answer = question.answer.replace(/(<([^>]+)>)/ig, '').toLowerCase() # remove html tags
+        answer = answer.replace(/[^a-zA-Z0-9\-\s\']/g, ' ') # remove any weird characters
+        answer = answer.replace(/^\s+|\s+$/g, '') # trim whitespace
+        answer = answer.replace(/\s{2,}/g, ' ') # replace two or more spaces with one
+
+        question.answer = answer
+
         robot.brain.set("current-trivia-question-#{msg.message.room}", question)
         msg.send "[#{question.category.title.toUpperCase()}] For #{question.value/100} point#{if (question.value > 100) then 's' else ''}: #{question.question}..."
 
   robot.respond /i give up/i, (msg) ->
     question = robot.brain.get("current-trivia-question-#{msg.message.room}")
     robot.brain.remove("current-trivia-question-#{msg.message.room}")
-    
-    answer = question.answer.replace(/(<([^>]+)>)/ig, '').toUpperCase()
-    answer = answer.replace(/[^a-zA-Z0-9\-\s\']/g, ' ')
 
     reactions = ["LOLZ", "G8", "Great", "Nice job", "That was a tough one", "Thanks for nothing", "Wow, you really turchioed that one"]
     reaction = reactions[Math.floor(Math.random() * reactions.length)]
 
-    msg.send "#{reaction}, the answer was '#{answer}'."
+    msg.send "#{reaction}, the answer was '#{question.answer}'."
 
 
 # TODO:
