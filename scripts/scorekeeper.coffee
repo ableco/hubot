@@ -66,6 +66,8 @@ module.exports = (robot) ->
 
         question.answer = answer
 
+        console.log question
+
         robot.brain.set("current-trivia-question-#{msg.message.room}", question)
         msg.send "[#{question.category.title.toUpperCase()}] For #{question.value/100} point#{if (question.value > 100) then 's' else ''}: #{question.question}..."
 
