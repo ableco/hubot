@@ -63,6 +63,7 @@ module.exports = (robot) ->
 
         answer = question.answer.replace(/(<([^>]+)>)/ig, '').toLowerCase() # remove html tags
         answer = answer.replace(/[^a-zA-Z0-9\-\s\']/g, ' ') # remove any weird characters
+        answer = answer.replace(/(\s\')/g, "'") # weird issue with space before apostraphes
         answer = answer.replace(/^\s+|\s+$/g, '') # trim whitespace
         answer = answer.replace(/\s{2,}/g, ' ') # replace two or more spaces with one
         question.answer = answer
