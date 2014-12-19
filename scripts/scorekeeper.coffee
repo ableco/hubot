@@ -89,8 +89,6 @@ module.exports = (robot) ->
           question.answers.push(splitup[1])
           question.answers.push(splitup[2])
 
-        console.log question
-
         robot.brain.set("current-trivia-question-#{msg.message.room}", question)
         msg.send "[#{question.category.title.toUpperCase()}] For #{question.value/100} point#{if (question.value > 100) then 's' else ''}: #{question.question}..."
 
@@ -102,14 +100,3 @@ module.exports = (robot) ->
     reaction = reactions[Math.floor(Math.random() * reactions.length)]
 
     msg.send "#{reaction}, the answer was '#{question.answer}'."
-
-
-# TODO:
-
-# cases in which to skip to new question
-# value is null
-# question contains the words seen here
-
-# strip out anything in parenthesis in the answer
-
-# 
