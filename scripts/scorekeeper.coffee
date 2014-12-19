@@ -68,7 +68,7 @@ module.exports = (robot) ->
         question.answers.push(answer)
         question.answer = answer
 
-        answer_with_no_the = answer.replace(/the|an|a/ig, '')
+        answer_with_no_the = answer.replace(/^(the|an|a)\b/i, '') # strip out the, an, a from beginning
         answer_with_no_the = answer_with_no_the.replace(/^\s+|\s+$/g, '') # trim whitespace
         answer_with_no_the = answer_with_no_the.replace(/\s{2,}/g, ' ') # replace two or more spaces with one
         question.answers.push(answer_with_no_the)
