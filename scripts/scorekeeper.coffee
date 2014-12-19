@@ -65,13 +65,22 @@ module.exports = (robot) ->
         answer = answer.replace(/[^a-zA-Z0-9\-\s\']/g, ' ') # remove any weird characters
         answer = answer.replace(/^\s+|\s+$/g, '') # trim whitespace
         answer = answer.replace(/\s{2,}/g, ' ') # replace two or more spaces with one
-        question.answers.push(answer)
         question.answer = answer
+        question.answers.push(answer)
+        splitup = answer.match(/(.+) or (.+)/)
+        if splitup
+          question.answers.push(splitup[1])
+          question.answers.push(splitup[2])
 
         answer_with_no_the = answer.replace(/^(the|an|a)\b/i, '') # strip out the, an, a from beginning
         answer_with_no_the = answer_with_no_the.replace(/^\s+|\s+$/g, '') # trim whitespace
         answer_with_no_the = answer_with_no_the.replace(/\s{2,}/g, ' ') # replace two or more spaces with one
         question.answers.push(answer_with_no_the)
+        splitup = answer_with_no_the.match(/(.+) or (.+)/)
+        if splitup
+          question.answers.push(splitup[1])
+          question.answers.push(splitup[2])
+
 
         console.log question
 
