@@ -59,12 +59,19 @@ module.exports = (robot) ->
       .get() (err, res, body) ->
         question = JSON.parse(body)[0]
 
+        question.answers = []
+
         answer = question.answer.replace(/(<([^>]+)>)/ig, '').toLowerCase() # remove html tags
         answer = answer.replace(/[^a-zA-Z0-9\-\s\']/g, ' ') # remove any weird characters
         answer = answer.replace(/^\s+|\s+$/g, '') # trim whitespace
         answer = answer.replace(/\s{2,}/g, ' ') # replace two or more spaces with one
-
+        question.answers.push(answer)
         question.answer = answer
+
+        answer_with_no_the = answer.replace(/the|an|a/ig, '')
+        answer_with_no_the = answer_with_no_the.replace(/^\s+|\s+$/g, '') # trim whitespace
+        answer_with_no_the = answer_with_no_the.replace(/\s{2,}/g, ' ') # replace two or more spaces with one
+        question.answers.push(answer_with_no_the)
 
         console.log question
 
@@ -75,7 +82,7 @@ module.exports = (robot) ->
     question = robot.brain.get("current-trivia-question-#{msg.message.room}")
     robot.brain.remove("current-trivia-question-#{msg.message.room}")
 
-    reactions = ["LOLZ", "G8", "Great", "Nice job", "That was a tough one", "Thanks for nothing", "Wow, you really turchioed that one"]
+    reactions = ["LOLZ", "G8", "Great", "Nice job (not)", "That was a tough one", "Thanks for nothing", "Wow, you really turchioed that one"]
     reaction = reactions[Math.floor(Math.random() * reactions.length)]
 
     msg.send "#{reaction}, the answer was '#{question.answer}'."
