@@ -100,3 +100,17 @@ module.exports = (robot) ->
     reaction = reactions[Math.floor(Math.random() * reactions.length)]
 
     msg.send "#{reaction}, the answer was '#{question.answer}'."
+
+    data = JSON.stringify({
+      user: "louie",
+      points: question.value/100
+    })
+    msg.http("http://disrupto-scorekeeper.herokuapp.com/trivia_answer")
+      .post(data) (err, res, body) ->
+        console.log body
+
+
+
+
+
+    
