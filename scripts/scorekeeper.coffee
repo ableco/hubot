@@ -1,7 +1,7 @@
 # https://github.com/github/hubot/blob/master/docs/scripting.md
 
 class Question
-  constructor: (msg) ->
+  constructor: (msg, robot) ->
     msg.http("http://jservice.io/api/random")
       .get() (err, res, body) ->
         question = JSON.parse(body)[0]
@@ -94,7 +94,7 @@ module.exports = (robot) ->
   # [{"id":33724,"answer":"coffer","question":"Type of chest seen here in the Getty collection; those of the Getty trust are quite full","value":500,"airdate":"1998-10-12T12:00:00.000Z","created_at":"2014-02-11T23:05:48.949Z","updated_at":"2014-02-11T23:05:48.949Z","category_id":3942,"category":{"id":3942,"title":"the getty","created_at":"2014-02-11T23:05:48.062Z","updated_at":"2014-02-11T23:05:48.062Z","clue_id":null,"clues_count":5}}]
 
   robot.respond /quiz me/i, (msg) ->
-    question = new Question(msg)
+    question = new Question(msg, robot)
 
   robot.respond /i give up/i, (msg) ->
     question = robot.brain.get("current-trivia-question-#{msg.message.room}")
