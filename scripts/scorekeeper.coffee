@@ -1,5 +1,37 @@
 # https://github.com/github/hubot/blob/master/docs/scripting.md
 
+class Question
+  constructor: (msg) ->
+    msg.http("http://jservice.io/api/random")
+      .get() (err, res, body) ->
+        question = JSON.parse(body)[0]
+
+        question.answers = []
+
+        answer = question.answer.replace(/(<([^>]+)>)/ig, '').toLowerCase() # remove html tags
+        answer = answer.replace(/[^a-zA-Z0-9\-\s\']/g, ' ') # remove any weird characters
+        answer = answer.replace(/(\s\')/g, "'") # weird issue with space before apostraphes
+        answer = answer.replace(/^\s+|\s+$/g, '') # trim whitespace
+        answer = answer.replace(/\s{2,}/g, ' ') # replace two or more spaces with one
+        question.answer = answer
+        question.answers.push(answer)
+        splitup = answer.match(/(.+) or (.+)/)
+        if splitup
+          question.answers.push(splitup[1])
+          question.answers.push(splitup[2])
+
+        answer_with_no_the = answer.replace(/^(the|an|a)\b/i, '') # strip out the, an, a from beginning
+        answer_with_no_the = answer_with_no_the.replace(/^\s+|\s+$/g, '') # trim whitespace
+        answer_with_no_the = answer_with_no_the.replace(/\s{2,}/g, ' ') # replace two or more spaces with one
+        question.answers.push(answer_with_no_the)
+        splitup = answer_with_no_the.match(/(.+) or (.+)/)
+        if splitup
+          question.answers.push(splitup[1])
+          question.answers.push(splitup[2])
+
+        robot.brain.set("current-trivia-question-#{msg.message.room}", question)
+        msg.send "[#{question.category.title.toUpperCase()}] For #{question.value/100} point#{if (question.value > 100) then 's' else ''}: #{question.question}..."
+
 module.exports = (robot) ->
   robot.catchAll (msg) ->
     room = msg.message.room
@@ -62,35 +94,7 @@ module.exports = (robot) ->
   # [{"id":33724,"answer":"coffer","question":"Type of chest seen here in the Getty collection; those of the Getty trust are quite full","value":500,"airdate":"1998-10-12T12:00:00.000Z","created_at":"2014-02-11T23:05:48.949Z","updated_at":"2014-02-11T23:05:48.949Z","category_id":3942,"category":{"id":3942,"title":"the getty","created_at":"2014-02-11T23:05:48.062Z","updated_at":"2014-02-11T23:05:48.062Z","clue_id":null,"clues_count":5}}]
 
   robot.respond /quiz me/i, (msg) ->
-    msg.http("http://jservice.io/api/random")
-      .get() (err, res, body) ->
-        question = JSON.parse(body)[0]
-
-        question.answers = []
-
-        answer = question.answer.replace(/(<([^>]+)>)/ig, '').toLowerCase() # remove html tags
-        answer = answer.replace(/[^a-zA-Z0-9\-\s\']/g, ' ') # remove any weird characters
-        answer = answer.replace(/(\s\')/g, "'") # weird issue with space before apostraphes
-        answer = answer.replace(/^\s+|\s+$/g, '') # trim whitespace
-        answer = answer.replace(/\s{2,}/g, ' ') # replace two or more spaces with one
-        question.answer = answer
-        question.answers.push(answer)
-        splitup = answer.match(/(.+) or (.+)/)
-        if splitup
-          question.answers.push(splitup[1])
-          question.answers.push(splitup[2])
-
-        answer_with_no_the = answer.replace(/^(the|an|a)\b/i, '') # strip out the, an, a from beginning
-        answer_with_no_the = answer_with_no_the.replace(/^\s+|\s+$/g, '') # trim whitespace
-        answer_with_no_the = answer_with_no_the.replace(/\s{2,}/g, ' ') # replace two or more spaces with one
-        question.answers.push(answer_with_no_the)
-        splitup = answer_with_no_the.match(/(.+) or (.+)/)
-        if splitup
-          question.answers.push(splitup[1])
-          question.answers.push(splitup[2])
-
-        robot.brain.set("current-trivia-question-#{msg.message.room}", question)
-        msg.send "[#{question.category.title.toUpperCase()}] For #{question.value/100} point#{if (question.value > 100) then 's' else ''}: #{question.question}..."
+    question = new Question(msg)
 
   robot.respond /i give up/i, (msg) ->
     question = robot.brain.get("current-trivia-question-#{msg.message.room}")
