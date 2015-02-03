@@ -118,7 +118,7 @@ module.exports = (robot) ->
 
     data = JSON.stringify({
       user: "louie",
-      points: question.value/100
+      points: 1
     })
     msg.http("http://disrupto-scorekeeper.herokuapp.com/trivia_answer")
       .post(data) (err, res, body) ->
