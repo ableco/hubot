@@ -42,7 +42,7 @@ module.exports = (robot) ->
   robot.catchAll (msg) ->
     console.log msg.message
     room = msg.message.room
-    sender = msg.message.user.id
+    sender = msg.message.user.name
 
     # check if message was the answer to the current question
     question = robot.brain.get("current-trivia-question-#{room}")
@@ -85,7 +85,7 @@ module.exports = (robot) ->
   robot.hear /(^|\s)([\+|\-]\d+)/i, (msg) ->
     score = msg.match[2]
     room = msg.message.room
-    score_setter = msg.message.user.id
+    score_setter = msg.message.user.name
     last_sender = robot.brain.get("#{room}-last-sender")
     data = JSON.stringify({
       user: last_sender,
