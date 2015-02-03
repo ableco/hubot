@@ -40,6 +40,7 @@ class Question
 
 module.exports = (robot) ->
   robot.catchAll (msg) ->
+    console.log msg.message
     room = msg.message.room
     sender = msg.message.user.id
 
