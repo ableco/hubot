@@ -1,3 +1,17 @@
+# Description:
+#   [Translate] Hubot learns to speak multiple languages!
+#
+# Dependencies:
+#   redis-brain
+#
+# Commands:
+#   hubot translate reset
+#   hubot translate on
+#   hubot translate off
+#
+# Author:
+#   rickyc
+
 module.exports = (robot) ->
   # list of rooms with translate parameter
   robot.brain.data.autotranslate ?= {}
@@ -19,3 +33,10 @@ module.exports = (robot) ->
         .query(phrase: msg.match[1])
         .get() (err, res, body) ->
           msg.send(body)
+
+  robot.respond /translate help/i, (msg) ->
+    msg.send """
+     hubot translate reset
+     hubot translate on
+     hubot translate off
+   """
