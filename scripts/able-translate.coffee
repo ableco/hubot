@@ -2,6 +2,9 @@ module.exports = (robot) ->
   # list of rooms with translate parameter
   robot.brain.data.autotranslate ?= {}
 
+  robot.respond /translate reset/i, (msg) ->
+    robot.brain.data.autotranslate = {}
+
   robot.respond /translate (auto|start|on|yes)/i, (msg) ->
     robot.brain.data.autotranslate[msg.message.room] = true
     msg.send 'Translation started!'
